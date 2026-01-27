@@ -59,7 +59,7 @@ const GravitySteeringSim = () => {
   useEffect(() => {
     const initSim = async () => {
       try {
-        const response = await fetch(`${API_BASE}/simulation/create`, {
+        const response = await fetch(`${API_BASE}/api/simulation/create`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
