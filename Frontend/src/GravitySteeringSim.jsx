@@ -89,7 +89,7 @@ const GravitySteeringSim = () => {
     if (!simulationId) return;
 
     try {
-      const response = await fetch(`${API_BASE}/simulation/${simulationId}/step`, {
+     const response = await fetch(`${API_BASE}/api/simulation/${simulationId}/step`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target_angle: targetAngle })
@@ -148,7 +148,7 @@ const GravitySteeringSim = () => {
   const updateBackendParam = async (paramObj) => {
     if (!simulationId) return;
     try {
-      await fetch(`${API_BASE}/simulation/${simulationId}/update_params`, {
+     await fetch(`${API_BASE}/api/simulation/${simulationId}/update_params`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paramObj)
@@ -161,7 +161,7 @@ const GravitySteeringSim = () => {
   const resetSimulation = async () => {
     setIsRunning(false);
     if (simulationId) {
-      await fetch(`${API_BASE}/simulation/${simulationId}/reset`, {
+     await fetch(`${API_BASE}/api/simulation/${simulationId}/reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ initial_velocity: velocity })
