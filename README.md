@@ -359,6 +359,8 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ---
 
+## **Notion**: https://phyvista.notion.site/PhyVista-2ef9b87cb91380ed8148da2aa6e3343b?source=copy_link
+
 ## 📧 Contact
 
 Questions? Ideas? Found a bug?
