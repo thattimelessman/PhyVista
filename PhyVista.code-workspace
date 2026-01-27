@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": "frontend",
+      "name": "PhyVista UI"
+    },
+    {
+      "path": "backend",
+      "name": "PhyVista Engine"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/__pycache__": true
+    }
+  }
+}
