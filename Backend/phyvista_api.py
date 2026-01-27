@@ -3,14 +3,15 @@ PhyVista Flask API Server
 REST API for interfacing with the physics simulation backend
 Optimized version with bug fixes and performance improvements
 """
+import os
 import json
+import logging
+import uuid
+import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import numpy as np
 from typing import Dict, Optional, List, Any
-import uuid
 from functools import wraps
-import logging
 
 # Import from the physics engine (assumes phyvista_backend.py is in same directory)
 from phyvista_backend import (
@@ -623,6 +624,9 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
+    # Get the PORT from Render (default to 5000 if local)
+    port = int(os.environ.get("PORT", 5000))
+    
     print("=" * 60)
     print("PhyVista API Server Starting...")
     print("=" * 60)
@@ -641,9 +645,10 @@ if __name__ == '__main__':
     print("  GET    /api/presets/pid")
     print("  POST   /api/analysis/parameter_sweep")
     print("\n" + "=" * 60)
-    print(f"Server running on http://localhost:5000")
+    print(f"Server running on port {port}")  # Updated to reflect real port
     print(f"Maximum simulations: {MAX_SIMULATIONS}")
     print(f"Maximum duration: {MAX_DURATION}s")
     print("=" * 60 + "\n")
     
-    app.run(debug=True, port=5000)
+    # REQUIRED for Render: host='0.0.0.0' and dynamic port
+    app.run(host='0.0.0.0', port=port, debug=False)
