@@ -322,6 +322,16 @@ PhyVista/
 
 ---
 
+## 💾 Screenshots
+
+s1:https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/Beige%20Gray%20Minimalist%20Aesthetic%20Photo%20Collage%20Beach%20Desktop%20Wallpaper_20260128_085939_0000.png
+s2:https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/Screenshot%20(158).png
+s3:https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_52_19.png
+s4:https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_53_12.png
+s5:https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_53_40.png
+
+---
+
 ## 🤝 Areas for contribution
 
 - Additional physics models (e.g., four-wheel dynamics)
