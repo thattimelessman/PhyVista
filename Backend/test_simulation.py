@@ -1,6 +1,6 @@
 from phyvista_backend import Simulation, PhysicsParameters, PIDController, GravityEnvironment
 
-# Configure physics for Moon
+# Configuration of physics for Moon
 params = PhysicsParameters(
     mass=500.0,
     gravity=GravityEnvironment.MOON.value,
