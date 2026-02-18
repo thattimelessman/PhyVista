@@ -1,8 +1,8 @@
 # PhyVista - Low-Gravity Vehicle Steering Simulator
 
 A professional physics simulation platform for studying vehicle dynamics and control systems in reduced gravity environments. Built for aerospace engineers, robotics researchers, and anyone curious about how vehicles behave on the Moon and Mars.
---
-***NOTE*: It is Suggested if you wait for a minute or so to let [https://phyvista.vercel.app/] connect to backend as I'm burning free tier for now.**
+
+***NOTE*: It is suggested to wait a minute or so for [https://phyvista.vercel.app/] to connect to the backend as it's running on free tier.**
 
 ---
 
@@ -79,7 +79,7 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 ```bash
 # Clone the repository
 git clone https://github.com/thattimelessman/PhyVista.git
-cd PhyVista
+cd PhyVista/Backend
 
 # Create virtual environment
 python -m venv venv
@@ -96,6 +96,9 @@ The API server will start on `http://localhost:5000`
 
 ### Frontend Setup
 ```bash
+# From repo root
+cd Frontend
+
 # Install dependencies
 npm install
 
@@ -313,12 +316,17 @@ Switch themes via View menu or use default Vista theme.
 ## 📁 Project Structure
 ```
 PhyVista/
-├── phyvista_backend.py      # Core physics engine
-├── phyvista_api.py           # Flask REST API server
-├── src/
-│   └── GravitySteeringSim.jsx # React frontend component
-├── requirements.txt          # Python dependencies
-├── package.json              # Node.js dependencies
+├── Backend/
+│   ├── phyvista_backend.py   # Core physics engine
+│   ├── phyvista_api.py       # Flask REST API server
+│   └── requirements.txt      # Python dependencies
+├── Frontend/
+│   ├── src/
+│   │   └── GravitySteeringSim.jsx  # React frontend component
+│   └── package.json          # Node.js dependencies
+├── Screenshots/
+├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
@@ -326,15 +334,15 @@ PhyVista/
 
 ## 💾 Screenshots
 
-![image alt](https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/Beige%20Gray%20Minimalist%20Aesthetic%20Photo%20Collage%20Beach%20Desktop%20Wallpaper_20260128_085939_0000.png)
-![image alt](https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/Screenshot%20(158).png)
-![image alt](https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_53_40.png)
-![image alt](https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_53_12.png)
-![image alt](https://github.com/thattimelessman/PhyVista/blob/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_52_19.png)
+![Overview](https://raw.githubusercontent.com/thattimelessman/PhyVista/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/Beige%20Gray%20Minimalist%20Aesthetic%20Photo%20Collage%20Beach%20Desktop%20Wallpaper_20260128_085939_0000.png)
+![UI Screenshot](https://raw.githubusercontent.com/thattimelessman/PhyVista/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/Screenshot%20(158).png)
+![Live App 1](https://raw.githubusercontent.com/thattimelessman/PhyVista/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_53_40.png)
+![Live App 2](https://raw.githubusercontent.com/thattimelessman/PhyVista/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_53_12.png)
+![Live App 3](https://raw.githubusercontent.com/thattimelessman/PhyVista/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/screencapture-phyvista-vercel-app-2026-01-28-01_52_19.png)
 
 ---
 
-## 🤝 Areas for contribution
+## 🤝 Areas for Contribution
 
 - Additional physics models (e.g., four-wheel dynamics)
 - More control algorithms (MPC, LQR, adaptive control)
@@ -382,6 +390,9 @@ Questions? Ideas? Found a bug?
 - **GitHub Issues**: [Report a bug](https://github.com/thattimelessman/PhyVista/issues)
 
 ---
+
 **NOTE: Stealing or copying this project would be deeply unappreciated.**
+
 ---
+
 **Made with brains for aerospace engineers and robotics enthusiasts**
