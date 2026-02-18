@@ -357,7 +357,7 @@ class VehicleDynamics:
 
 
 class Simulation:
-    """Main simulation controller with enhanced diagnostics and error handling"""
+    """Main simulation controller with enhanced diagnostic and error handling"""
     
     def __init__(self, params: PhysicsParameters, controller: PIDController,
                  initial_velocity: float = 10.0, dt: float = 0.01):
