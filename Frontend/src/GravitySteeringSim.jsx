@@ -472,6 +472,7 @@ const GravitySteeringSim = () => {
                             ? `rounded border-2 shadow-md active:shadow-inner ${gravity === EARTH_GRAVITY ? 'bg-gradient-to-b from-blue-200 to-blue-300 border-blue-500 text-blue-900' : 'bg-gradient-to-b from-gray-200 to-gray-300 border-gray-500 text-gray-800 hover:from-gray-300 hover:to-gray-400'}`
                             : `border-2 border-black ${gravity === EARTH_GRAVITY ? 'bg-black text-white' : 'bg-white text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.3)] hover:bg-gray-100'}`
                         }`}
+                       
                       >
                         EARTH<br/><span className="text-[10px] font-normal">{EARTH_GRAVITY}m/s²</span>
                       </button>
