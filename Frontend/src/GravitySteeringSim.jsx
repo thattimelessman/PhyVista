@@ -5,7 +5,7 @@ import { Play, Pause, RotateCcw, Settings, ChevronRight, X } from 'lucide-react'
 const GravitySteeringSim = () => {
  const API_BASE = 'https://phyvista-backend.onrender.com';
 
-  // --- Theme State ---
+  // --- Theme State --
   const [theme, setTheme] = useState('vista'); 
   const [showViewMenu, setShowViewMenu] = useState(false);
 
