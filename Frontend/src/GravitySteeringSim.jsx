@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Play, Pause, RotateCcw, Settings, ChevronRight, X } from 'lucide-react';
 
 const GravitySteeringSim = () => {
- const API_BASE = 'https://phyvista-backend.onrender.com';
+ const API_BASE = process.env.REACT_APP_API_BASE || 'https://phyvista-backend.onrender.com';
 
   // --- Theme State --
   const [theme, setTheme] = useState('vista'); 
