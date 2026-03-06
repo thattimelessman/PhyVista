@@ -334,17 +334,29 @@ class VehicleDynamics:
             # Straight line motion
             angular_velocity = 0.0
         
-        # Update heading using semi-implicit Euler
-        new_heading = state.heading + angular_velocity * dt
-        
+        # Update heading and position using RK4 integration
+        k1_heading = angular_velocity
+        k1_x = state.velocity * np.cos(state.heading)
+        k1_y = state.velocity * np.sin(state.heading)
+
+        k2_heading = angular_velocity
+        k2_x = state.velocity * np.cos(state.heading + 0.5 * k1_heading * dt)
+        k2_y = state.velocity * np.sin(state.heading + 0.5 * k1_heading * dt)
+
+        k3_heading = angular_velocity
+        k3_x = state.velocity * np.cos(state.heading + 0.5 * k2_heading * dt)
+        k3_y = state.velocity * np.sin(state.heading + 0.5 * k2_heading * dt)
+
+        k4_heading = angular_velocity
+        k4_x = state.velocity * np.cos(state.heading + k3_heading * dt)
+        k4_y = state.velocity * np.sin(state.heading + k3_heading * dt)
+
+        new_heading = state.heading + (dt / 6.0) * (k1_heading + 2*k2_heading + 2*k3_heading + k4_heading)
+        new_x = state.position[0] + (dt / 6.0) * (k1_x + 2*k2_x + 2*k3_x + k4_x)
+        new_y = state.position[1] + (dt / 6.0) * (k1_y + 2*k2_y + 2*k3_y + k4_y)
+
         # Normalize heading to [-π, π]
         new_heading = np.arctan2(np.sin(new_heading), np.cos(new_heading))
-        
-        # Update position using updated heading (improved accuracy)
-        # Use midpoint method for better accuracy
-        mid_heading = state.heading + 0.5 * angular_velocity * dt
-        new_x = state.position[0] + state.velocity * np.cos(mid_heading) * dt
-        new_y = state.position[1] + state.velocity * np.sin(mid_heading) * dt
         
         return VehicleState(
             time=state.time + dt,
