@@ -273,7 +273,7 @@ const GravitySteeringSim = () => {
                 <div className={`w-3 h-3 ${theme === 'vista' ? 'rounded-full bg-green-500 border border-green-600' : 'hidden'}`}></div>
               </div>
               <h1 className={`${theme === 'vista' ? 'font-semibold text-sm tracking-wide text-white' : 'font-bold text-xs tracking-tight text-black text-center flex-1'} select-none`}>
-                Low-Gravity Vehicle Steering Simulator
+                PhyVista v2.0
               </h1>
               {theme === 'mac' && <div className="w-3"></div>}
             </div>
@@ -663,7 +663,7 @@ const GravitySteeringSim = () => {
           
           {/* Bottom Info Bar */}
           <div className={`px-4 py-2 text-xs ${theme === 'vista' ? 'bg-gradient-to-b from-gray-200 to-gray-300 border-t-2 border-gray-400 text-gray-700' : 'bg-white border-t-2 border-black text-black'}`}>
-            <span className="font-bold">Low-Gravity Vehicle Steering Simulator v2.0</span> | 
+            <span className="font-bold">PhyVista v2.0</span> | 
             <span className="ml-2">PhyVista Python Engine</span> | 
             <span className="ml-2">© 2026 Aerospace Research Division</span>
           </div>
@@ -674,7 +674,7 @@ const GravitySteeringSim = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowHelpDialog(false)}>
             <div className={`max-w-3xl w-full max-h-[90vh] overflow-y-auto ${theme === 'vista' ? 'bg-white border-2 border-gray-500 rounded-lg shadow-2xl' : 'bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]'}`} onClick={(e) => e.stopPropagation()}>
               <div className={`px-4 py-3 flex justify-between items-center ${theme === 'vista' ? 'bg-gradient-to-b from-gray-800 to-gray-900 border-b border-gray-700' : 'bg-white border-b-2 border-black'}`}>
-                <h2 className={`font-semibold text-sm ${theme === 'vista' ? 'text-white' : 'text-black'}`}>Help - Low-Gravity Vehicle Steering Simulator</h2>
+                <h2 className={`font-semibold text-sm ${theme === 'vista' ? 'text-white' : 'text-black'}`}>Help - PhyVista v2.0</h2>
                 <button onClick={() => setShowHelpDialog(false)} className={`${theme === 'vista' ? 'text-white hover:text-red-400' : 'text-black hover:text-gray-600'}`}>
                   <X size={20} />
                 </button>
