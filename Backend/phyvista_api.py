@@ -10,6 +10,7 @@ import uuid
 import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 from typing import Dict, Optional, List, Any
 from functools import wraps
 
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
-
+socketio = SocketIO(app, cors_allowed_origins="*")
 # Store active simulations (in production, use Redis or database)
 active_simulations: Dict[str, Simulation] = {}
 
@@ -606,6 +607,22 @@ def parameter_sweep():
     })
 
 
+# --- WEBSOCKET EVENTS ---
+@socketio.on('start_step')
+def handle_step(data):
+    sim_id = data.get('simulation_id')
+    target_angle = data.get('target_angle', 0.0)
+
+    if sim_id not in active_simulations:
+        emit('error', {'message': 'Simulation not found'})
+        return
+
+    sim = active_simulations[sim_id]
+    sim.target_angle = target_angle
+    result = sim.step()
+    emit('step_result', result)
+# ----------------------------
+
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
@@ -651,4 +668,4 @@ if __name__ == '__main__':
     print("=" * 60 + "\n")
     
     # REQUIRED for Render: host='0.0.0.0' and dynamic port
-    app.run(host='0.0.0.0', port=port, debug=False)
+socketio.run(app, host='0.0.0.0', port=port, debug=False)

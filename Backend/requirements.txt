@@ -22,3 +22,5 @@ mypy>=1.4.0
 
 # Optional: For advanced analysis
 matplotlib>=3.7.0
+
+flask-socketio

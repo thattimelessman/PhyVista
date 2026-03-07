@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { io } from 'socket.io-client';import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Play, Pause, RotateCcw, Settings, ChevronRight, X } from 'lucide-react';
 
 const GravitySteeringSim = () => {
- const API_BASE = process.env.REACT_APP_API_BASE || 'https://phyvista-backend.onrender.com';
-
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://phyvista-backend.onrender.com';const socketRef = useRef(null);
   // --- Theme State --
   const [theme, setTheme] = useState('vista'); 
   const [showViewMenu, setShowViewMenu] = useState(false);
@@ -84,55 +83,68 @@ const GravitySteeringSim = () => {
     initSim();
   }, []); 
 
-  // 2. SIMULATION STEP FUNCTION
-  const simulationStep = async () => {
-    if (!simulationId) return;
-
-    try {
-     const response = await fetch(`${API_BASE}/api/simulation/${simulationId}/step`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target_angle: targetAngle })
-      });
-      
-      const nextData = await response.json();
-      
-      if (nextData.error) {
-        console.error("Backend Error:", nextData.error);
-        setIsRunning(false);
-        return; 
-      }
-
-      const state = nextData.state;
-      const diag = nextData.diagnostics;
-
-      setPosition({ x: state.position_x, y: state.position_y });
-      setHeading(state.heading_rad);
-      setAngularVelocity(state.angular_velocity_rad);
-      setSteeringAngle(state.steering_angle);
-      setTime(state.time);
-      setTurnRadius(diag.turn_radius || Infinity);
-      setNormalForce(diag.normal_force);
-      setMaxFriction(diag.max_friction_force);
-      setCentripetalReq(diag.centripetal_force_required);
-
-      setHistoryData(prev => [...prev, {
-        time: state.time.toFixed(2),
-        steeringAngle: state.steering_angle.toFixed(2),
-        targetAngle: targetAngle,
-        heading: state.heading_deg.toFixed(2),
-        frictionUtilization: diag.friction_utilization.toFixed(1),
-        canTurn: diag.can_turn ? 100 : 0,
-        angularVelocity: state.angular_velocity_deg.toFixed(2),
-        pidError: diag.pid_error.toFixed(2),
-        velocity: state.velocity.toFixed(2)
-      }].slice(-100));
-
-    } catch (error) {
-      console.error("Network error:", error);
+  // 2. WEBSOCKET STEP FUNCTION
+  const handleStepResult = (nextData) => {
+    if (nextData.error) {
+      console.error("Backend Error:", nextData.error);
       setIsRunning(false);
+      return;
     }
+
+    const state = nextData.state;
+    const diag = nextData.diagnostics;
+
+    setPosition({ x: state.position_x, y: state.position_y });
+    setHeading(state.heading_rad);
+    setAngularVelocity(state.angular_velocity_rad);
+    setSteeringAngle(state.steering_angle);
+    setTime(state.time);
+    setTurnRadius(diag.turn_radius || Infinity);
+    setNormalForce(diag.normal_force);
+    setMaxFriction(diag.max_friction_force);
+    setCentripetalReq(diag.centripetal_force_required);
+
+    setHistoryData(prev => [...prev, {
+      time: state.time.toFixed(2),
+      steeringAngle: state.steering_angle.toFixed(2),
+      targetAngle: targetAngle,
+      heading: state.heading_deg.toFixed(2),
+      frictionUtilization: diag.friction_utilization.toFixed(1),
+      canTurn: diag.can_turn ? 100 : 0,
+      angularVelocity: state.angular_velocity_deg.toFixed(2),
+      pidError: diag.pid_error.toFixed(2),
+      velocity: state.velocity.toFixed(2)
+    }].slice(-100));
   };
+
+  // 3. WEBSOCKET MAIN LOOP
+  useEffect(() => {
+    if (isRunning && simulationId) {
+      const socket = io(API_BASE);
+      socketRef.current = socket;
+
+      socket.on('connect', () => {
+        socket.emit('start_step', { simulation_id: simulationId, target_angle: targetAngle });
+      });
+
+      socket.on('step_result', (data) => {
+        handleStepResult(data);
+        setTimeout(() => {
+          socket.emit('start_step', { simulation_id: simulationId, target_angle: targetAngle });
+        }, 80);
+      });
+
+      socket.on('error', (err) => {
+        console.error('Socket error:', err);
+        setIsRunning(false);
+      });
+
+      return () => {
+        socket.disconnect();
+        socketRef.current = null;
+      };
+    }
+  }, [isRunning, simulationId, targetAngle]);
 
   // 3. MAIN LOOP
   useEffect(() => {
