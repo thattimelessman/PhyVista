@@ -24,3 +24,5 @@ mypy>=1.4.0
 matplotlib>=3.7.0
 
 flask-socketio
+
+redis
