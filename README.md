@@ -11,7 +11,7 @@ A professional physics simulation platform for studying vehicle dynamics and con
 This simulator models the real-world physics of wheeled vehicles operating in low-gravity conditions. It calculates forces, tracks steering behavior, detects wheel slip, and shows you exactly what happens when friction limits are exceeded—critical knowledge for designing lunar rovers or Martian exploration vehicles.
 
 **Key capabilities:**
-- Simulates vehicle dynamics using bicycle model physics
+- Simulates vehicle dynamics using bicycle model physics with RK4 numerical integration
 - Computes friction limits and slip conditions in real-time
 - Implements PID control for automated steering tracking
 - Provides detailed diagnostics and performance metrics
@@ -22,7 +22,7 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 ## ✨ Features
 
 ### Physics Engine
-- **High-fidelity dynamics**: NumPy-powered numerical integration with semi-implicit Euler method
+- **High-fidelity dynamics**: NumPy-powered RK4 (Runge-Kutta 4th order) numerical integration
 - **Friction modeling**: Real-time calculation of normal force, maximum friction, and centripetal requirements
 - **Slip detection**: Automatic detection when turning forces exceed available friction
 - **Turn radius calculation**: Bicycle model kinematics for accurate path prediction
@@ -35,13 +35,14 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 
 ### Backend API
 - **RESTful endpoints**: Full CRUD operations for simulation management
-- **Session handling**: Multiple concurrent simulations with unique IDs
+- **WebSocket support**: Real-time simulation loop via Flask-SocketIO
+- **Persistent sessions**: Redis-backed session storage — sessions survive server restarts
 - **Parameter sweeps**: Automated analysis across parameter ranges
 - **Data export**: JSON and CSV export for external analysis
 
 ### User Interface
 - **Dual themes**: Switch between Windows Vista and Classic Mac aesthetics
-- **Real-time telemetry**: Live position, heading, forces, and control metrics
+- **Real-time telemetry**: Live position, heading, forces, and control metrics via WebSocket
 - **Multi-chart analysis**: Steering response, friction utilization, angular velocity, PID error
 - **Desktop-class UX**: Menu bars, modal dialogs, and familiar desktop patterns
 
@@ -52,19 +53,23 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 **Backend:**
 - Python 3.8+
 - Flask (REST API server)
+- Flask-SocketIO (WebSocket real-time communication)
 - NumPy (numerical computation)
+- Redis (persistent session storage)
 - Flask-CORS (cross-origin support)
 
 **Frontend:**
 - React 18.x
+- Vite (build tool)
+- socket.io-client (WebSocket client)
 - Recharts (data visualization)
 - Tailwind CSS (styling)
 - Lucide React (icons)
 
 **Architecture:**
-- Client-server model with HTTP REST API
-- Stateful backend simulation engine
-- Real-time frontend with 100ms update rate
+- Client-server model with HTTP REST API + WebSocket
+- Redis-backed stateful simulation engine
+- Real-time frontend driven by WebSocket event loop
 
 ---
 
@@ -74,6 +79,7 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 - Python 3.8 or higher
 - Node.js 16+ and npm
 - Git
+- Redis instance (local or cloud — see [Redis Cloud](https://redis.io/try-free) for free tier)
 
 ### Backend Setup
 ```bash
@@ -88,6 +94,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install Python dependencies
 pip install -r requirements.txt
 
+# Set environment variables
+# Create a .env file or export directly:
+export REDIS_URL=redis://your-redis-url-here
+export PORT=5000
+
 # Run the backend server
 python phyvista_api.py
 ```
@@ -99,20 +110,24 @@ The API server will start on `http://localhost:5000`
 # From repo root
 cd Frontend
 
+# Copy environment template
+cp .env.example .env
+# Edit .env and set VITE_API_BASE=http://localhost:5000
+
 # Install dependencies
 npm install
 
 # Start development server
-npm start
+npm run dev
 ```
 
-The UI will open at `http://localhost:3000`
+The UI will open at `http://localhost:5173`
 
 ---
 
 ## 🎮 Quick Start
 
-1. **Launch both servers** (backend on port 5000, frontend on port 3000)
+1. **Launch both servers** (backend on port 5000, frontend on port 5173)
 
 2. **Select your environment:**
    - Click Earth, Mars, or Moon buttons
@@ -129,7 +144,7 @@ The UI will open at `http://localhost:3000`
 
 5. **Run simulation:**
    - Click START to begin
-   - Watch real-time telemetry update
+   - Watch real-time telemetry update via WebSocket
    - Switch to Analysis tab for performance charts
 
 6. **Experiment:**
@@ -242,6 +257,21 @@ GET /presets/gravity
 GET /presets/pid
 ```
 
+### WebSocket Events
+
+Connect to the backend using socket.io-client:
+
+```javascript
+import { io } from 'socket.io-client';
+const socket = io('http://localhost:5000');
+
+// Emit a step
+socket.emit('start_step', { simulation_id: 'your-id', target_angle: 15.0 });
+
+// Receive result
+socket.on('step_result', (data) => { console.log(data); });
+```
+
 ---
 
 ## 🔬 Physics Model
@@ -253,6 +283,18 @@ The simulator uses a **bicycle model** for vehicle kinematics:
 - **Turn radius**: `R = L / tan(δ)` where L is wheelbase, δ is steering angle
 - **Angular velocity**: `ω = v / R` for no-slip conditions
 - **Centripetal force**: `F_c = mv² / R`
+
+### Numerical Integration
+
+State integration uses **4th-order Runge-Kutta (RK4)** for improved accuracy over Euler methods:
+
+```
+k1 = f(t, y)
+k2 = f(t + dt/2, y + dt*k1/2)
+k3 = f(t + dt/2, y + dt*k2/2)
+k4 = f(t + dt, y + dt*k3)
+y_next = y + (dt/6)(k1 + 2k2 + 2k3 + k4)
+```
 
 ### Friction Limits
 
@@ -317,13 +359,28 @@ Switch themes via View menu or use default Vista theme.
 ```
 PhyVista/
 ├── Backend/
-│   ├── phyvista_backend.py   # Core physics engine
-│   ├── phyvista_api.py       # Flask REST API server
-│   └── requirements.txt      # Python dependencies
+│   ├── phyvista_backend.py     # Core physics engine (RK4, PID, bicycle model)
+│   ├── phyvista_api.py         # Flask REST API + WebSocket server
+│   ├── requirements.txt        # Python dependencies
+│   └── tests/
+│       └── test_physics.py     # 36 unit tests for physics engine
 ├── Frontend/
 │   ├── src/
-│   │   └── GravitySteeringSim.jsx  # React frontend component
-│   └── package.json          # Node.js dependencies
+│   │   ├── components/
+│   │   │   ├── TitleBar.jsx
+│   │   │   ├── MenuBar.jsx
+│   │   │   ├── ControlPanel.jsx
+│   │   │   ├── PhysicsTab.jsx
+│   │   │   ├── AnalysisTab.jsx
+│   │   │   └── HelpDialog.jsx
+│   │   ├── hooks/
+│   │   │   └── useSimulation.js  # WebSocket logic and simulation state
+│   │   └── GravitySteeringSim.jsx  # Root orchestrator component
+│   ├── .env.example            # Environment variable template
+│   └── package.json
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # GitHub Actions CI pipeline
 ├── Screenshots/
 ├── .gitignore
 ├── LICENSE
@@ -357,7 +414,6 @@ PhyVista/
 
 - Large time steps (dt > 0.1s) may cause numerical instability
 - No terrain interaction modeling yet
-- Session storage is in-memory (use Redis for production)
 - Maximum 100 concurrent simulations per server instance
 
 See the [Issues](https://github.com/thattimelessman/PhyVista/issues) page for full list and workarounds.
