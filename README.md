@@ -412,7 +412,6 @@ PhyVista/
 
 ## 🐛 Known Issues
 
-- Large time steps (dt > 0.1s) may cause numerical instability
 - No terrain interaction modeling yet
 - Maximum 100 concurrent simulations per server instance
 
