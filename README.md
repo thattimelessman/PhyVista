@@ -393,7 +393,7 @@ PhyVista/
 
 A structured reference guide covering 10 standardized test scenarios across Earth, Mars, and Moon environments — including vehicle parameters, PID profiles, and expected outcomes.
 
-[Download Scenario Reference Guide →](Docs/PhyVista_v2_Scenarios.pdf)
+[Download Scenario Reference Guide →](docs/PhyVista_v2_Scenarios.pdf)
 
 ---
 
