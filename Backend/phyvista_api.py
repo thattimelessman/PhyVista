@@ -30,6 +30,10 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+# API v1 Blueprint
+from flask import Blueprint
+api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
+
 # Redis setup
 REDIS_URL = os.environ.get('REDIS_URL')
 if not REDIS_URL:
@@ -80,7 +84,7 @@ class NumpyProvider(DefaultJSONProvider):
             return {'real': float(obj.real), 'imag': float(obj.imag)}
         return super().default(obj)
 
-app.json = NumpyProvider(app)
+
 
 
 # --- ERROR HANDLING DECORATORS ---
@@ -141,7 +145,7 @@ def parse_gravity(gravity_input) -> float:
         raise TypeError(f"Gravity must be string or number, got {type(gravity_input)}")
 
 
-@app.route('/api/health', methods=['GET'])
+@api_v1.route('/health', methods=['GET'])
 def health_check():
     return jsonify({
         'status': 'healthy',
@@ -151,7 +155,7 @@ def health_check():
     })
 
 
-@app.route('/api/simulation/create', methods=['POST'])
+@api_v1.route('/simulation/create', methods=['POST'])
 @handle_errors
 def create_simulation():
     if len(active_simulations) >= MAX_SIMULATIONS:
@@ -229,7 +233,7 @@ def create_simulation():
     }), 201
 
 
-@app.route('/api/simulation/<sim_id>/step', methods=['POST'])
+@api_v1.route('/simulation/<sim_id>/step', methods=['POST'])
 @handle_errors
 @validate_simulation_exists
 def step_simulation(sim_id: str):
@@ -247,7 +251,7 @@ def step_simulation(sim_id: str):
     return jsonify(result)
 
 
-@app.route('/api/simulation/<sim_id>/run', methods=['POST'])
+@api_v1.route('/simulation/<sim_id>/run', methods=['POST'])
 @handle_errors
 @validate_simulation_exists
 def run_simulation(sim_id: str):
@@ -271,7 +275,7 @@ def run_simulation(sim_id: str):
     })
 
 
-@app.route('/api/simulation/<sim_id>/reset', methods=['POST'])
+@api_v1.route('/simulation/<sim_id>/reset', methods=['POST'])
 @handle_errors
 @validate_simulation_exists
 def reset_simulation(sim_id: str):
@@ -294,7 +298,7 @@ def reset_simulation(sim_id: str):
     })
 
 
-@app.route('/api/simulation/<sim_id>/update_params', methods=['PUT'])
+@api_v1.route('/simulation/<sim_id>/update_params', methods=['PUT'])
 @handle_errors
 @validate_simulation_exists
 def update_parameters(sim_id: str):
@@ -354,7 +358,7 @@ def update_parameters(sim_id: str):
     })
 
 
-@app.route('/api/simulation/<sim_id>/history', methods=['GET'])
+@api_v1.route('/simulation/<sim_id>/history', methods=['GET'])
 @handle_errors
 @validate_simulation_exists
 def get_history(sim_id: str):
@@ -366,7 +370,7 @@ def get_history(sim_id: str):
     })
 
 
-@app.route('/api/simulation/<sim_id>/statistics', methods=['GET'])
+@api_v1.route('/simulation/<sim_id>/statistics', methods=['GET'])
 @handle_errors
 @validate_simulation_exists
 def get_statistics(sim_id: str):
@@ -374,7 +378,7 @@ def get_statistics(sim_id: str):
     return jsonify(sim.get_summary_statistics())
 
 
-@app.route('/api/simulation/<sim_id>', methods=['DELETE'])
+@api_v1.route('/simulation/<sim_id>', methods=['DELETE'])
 @handle_errors
 @validate_simulation_exists
 def delete_simulation_route(sim_id: str):
@@ -383,7 +387,7 @@ def delete_simulation_route(sim_id: str):
     return jsonify({'status': 'deleted', 'simulation_id': sim_id})
 
 
-@app.route('/api/simulation/list', methods=['GET'])
+@api_v1.route('/simulation/list', methods=['GET'])
 def list_simulations():
     simulations = []
     for sim_id, sim in active_simulations.items():
@@ -401,14 +405,14 @@ def list_simulations():
     })
 
 
-@app.route('/api/presets/gravity', methods=['GET'])
+@api_v1.route('/presets/gravity', methods=['GET'])
 def get_gravity_presets():
     return jsonify({
         'presets': {env.name: env.value for env in GravityEnvironment}
     })
 
 
-@app.route('/api/presets/pid', methods=['GET'])
+@api_v1.route('/presets/pid', methods=['GET'])
 def get_pid_presets():
     return jsonify({
         'presets': {
@@ -419,7 +423,7 @@ def get_pid_presets():
     })
 
 
-@app.route('/api/analysis/parameter_sweep', methods=['POST'])
+@api_v1.route('/analysis/parameter_sweep', methods=['POST'])
 @handle_errors
 def parameter_sweep():
     data = request.json
@@ -553,5 +557,7 @@ if __name__ == '__main__':
     print(f"Maximum simulations: {MAX_SIMULATIONS}")
     print(f"Maximum duration: {MAX_DURATION}s")
     print("=" * 60 + "\n")
+    
+    app.register_blueprint(api_v1)
     
     socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True)

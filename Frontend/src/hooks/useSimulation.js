@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://phyvista-backend.onrender.com';
+const API_V1 = `${API_BASE}/api/v1`;
 
 const EARTH_GRAVITY = 9.81;
 const MOON_GRAVITY = 1.62;
@@ -34,7 +35,7 @@ export default function useSimulation() {
   useEffect(() => {
     const initSim = async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/simulation/create`, {
+        const response = await fetch(`${API_V1}/simulation/create`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -111,7 +112,7 @@ export default function useSimulation() {
   const updateBackendParam = async (paramObj) => {
     if (!simulationId) return;
     try {
-      await fetch(`${API_BASE}/api/simulation/${simulationId}/update_params`, {
+      await fetch(`${API_V1}/simulation/${simulationId}/update_params`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paramObj)
@@ -124,7 +125,7 @@ export default function useSimulation() {
   const resetSimulation = async () => {
     setIsRunning(false);
     if (simulationId) {
-      await fetch(`${API_BASE}/api/simulation/${simulationId}/reset`, {
+      await fetch(`${API_V1}/simulation/${simulationId}/reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ initial_velocity: velocity })
