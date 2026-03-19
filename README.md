@@ -389,6 +389,14 @@ PhyVista/
 
 ---
 
+## 📄 Simulation Scenarios
+
+A structured reference guide covering 10 standardized test scenarios across Earth, Mars, and Moon environments — including vehicle parameters, PID profiles, and expected outcomes.
+
+[Download Scenario Reference Guide →](Docs/PhyVista_v2_Scenarios.pdf)
+
+---
+
 ## 💾 Screenshots
 
 ![Overview](https://raw.githubusercontent.com/thattimelessman/PhyVista/f97c84dee38b780925edfb7ce9f86f9c1699eb42/Screenshots/Beige%20Gray%20Minimalist%20Aesthetic%20Photo%20Collage%20Beach%20Desktop%20Wallpaper_20260128_085939_0000.png)
