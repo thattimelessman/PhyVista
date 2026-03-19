@@ -52,7 +52,7 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 
 **Backend:**
 - Python 3.8+
-- Flask (REST API server)
+- Flask + Blueprint (versioned REST API server)
 - Flask-SocketIO (WebSocket real-time communication)
 - NumPy (numerical computation)
 - Redis (persistent session storage)
@@ -158,7 +158,7 @@ The UI will open at `http://localhost:5173`
 
 ### Base URL
 ```
-http://localhost:5000/api
+http://localhost:5000/api/v1
 ```
 
 ### Key Endpoints
