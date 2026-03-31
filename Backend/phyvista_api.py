@@ -561,7 +561,4 @@ if __name__ == '__main__':
     app.register_blueprint(api_v1)
     
     if __name__ == '__main__':
-        if __name__ == '__main__':
-         if __name__ == '__main__':
         socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True)
-
