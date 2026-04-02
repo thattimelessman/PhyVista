@@ -26,10 +26,26 @@ from phyvista_backend import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from flask.json.provider import DefaultJSONProvider
+
+class NumpyProvider(DefaultJSONProvider):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, (np.floating, np.float32, np.float64)):
+            return float(obj)
+        if isinstance(obj, (np.integer, np.int32, np.int64)):
+            return int(obj)
+        if isinstance(obj, np.bool_):
+            return bool(obj)
+        if isinstance(obj, np.complexfloating):
+            return {'real': float(obj.real), 'imag': float(obj.imag)}
+        return super().default(obj)
+
 app = Flask(__name__)
+app.json_provider_class = NumpyProvider
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 socketio = SocketIO(app, cors_allowed_origins="*")
-
 # API v1 Blueprint
 from flask import Blueprint
 api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
@@ -75,7 +91,11 @@ def load_simulation(sim_id: str) -> Simulation:
 
 def delete_simulation(sim_id: str):
     active_simulations.pop(sim_id, None)
-    redis_client.delete(f"sim:{sim_id}")
+    if redis_client:
+        try:
+            redis_client.delete(f"sim:{sim_id}")
+        except Exception:
+            pass
 
 # Constants
 MAX_SIMULATIONS = 100
