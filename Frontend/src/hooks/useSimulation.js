@@ -34,27 +34,31 @@ export default function useSimulation() {
   const [centripetalReq, setCentripetalReq] = useState(0);
 
   useEffect(() => {
-    const initSim = async () => {
-      try {
-        const response = await fetch(`${API_V1}/simulation/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            mass, gravity, friction_coefficient: frictionCoeff,
-            initial_velocity: velocity, dt: 0.1,
-            pid_gains: { kp, ki, kd }
-          })
-        });
-        const data = await response.json();
+  let cancelled = false;
+  const initSim = async () => {
+    try {
+      const response = await fetch(`${API_V1}/simulation/create`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    mass, gravity, friction_coefficient: frictionCoeff,
+    initial_velocity: velocity, dt: 0.1,
+    pid_gains: { kp, ki, kd }
+  })
+});
+      const data = await response.json();
+      if (!cancelled) {
         setSimulationId(data.simulation_id);
         setNormalForce(mass * gravity);
         setMaxFriction(mass * gravity * frictionCoeff);
-      } catch (error) {
-        console.error("Failed to initialize backend simulation", error);
       }
-    };
-    initSim();
-  }, []);
+    } catch (error) {
+      console.error("Failed to initialize backend simulation", error);
+    }
+  };
+  initSim();
+  return () => { cancelled = true; };
+}, []);
 
   const handleStepResult = (nextData) => {
     if (nextData.error) {
