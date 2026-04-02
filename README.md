@@ -3,7 +3,7 @@
 
 A professional physics simulation platform for studying vehicle dynamics and control systems in reduced gravity environments. Built for aerospace engineers, robotics researchers, and anyone curious about how vehicles behave on the Moon and Mars.
 
-***NOTE*: It is suggested to wait a minute or so for [https://phyvista.vercel.app/] to connect to the backend as it's running on free tier.**
+**It is Suggested if you wait for a minute or so to let [https://phyvista.vercel.app/] connect to backend as I'm burning free tier for now.**
 
 ---
 
