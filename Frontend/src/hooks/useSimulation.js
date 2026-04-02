@@ -24,7 +24,7 @@ export default function useSimulation() {
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
   const [historyData, setHistoryData] = useState([]);
-  const [pathPoints, setPathPoints] = useState([{ x: 0, y: 0 }]);
+  const [pathPoints, setPathPoints] = useState([]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [heading, setHeading] = useState(0);
   const [angularVelocity, setAngularVelocity] = useState(0);

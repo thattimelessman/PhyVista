@@ -567,6 +567,7 @@ def internal_error(error):
     logger.error(f"Internal server error: {str(error)}", exc_info=True)
     return jsonify({'error': 'Internal server error'}), 500
 
+app.register_blueprint(api_v1)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
@@ -594,7 +595,4 @@ if __name__ == '__main__':
     print(f"Maximum duration: {MAX_DURATION}s")
     print("=" * 60 + "\n")
     
-    app.register_blueprint(api_v1)
-    
-    if __name__ == '__main__':
-        socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=port, debug=False, allow_unsafe_werkzeug=True)
