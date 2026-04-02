@@ -10,6 +10,8 @@ const MARS_GRAVITY = 3.71;
 
 export default function useSimulation() {
   const socketRef = useRef(null);
+  const didInit = useRef(false);
+
   const [simulationId, setSimulationId] = useState(null);
   const [gravity, setGravity] = useState(EARTH_GRAVITY);
   const [mass, setMass] = useState(500);
@@ -34,31 +36,29 @@ export default function useSimulation() {
   const [centripetalReq, setCentripetalReq] = useState(0);
 
   useEffect(() => {
-  let cancelled = false;
-  const initSim = async () => {
-    try {
-      const response = await fetch(`${API_V1}/simulation/create`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    mass, gravity, friction_coefficient: frictionCoeff,
-    initial_velocity: velocity, dt: 0.1,
-    pid_gains: { kp, ki, kd }
-  })
-});
-      const data = await response.json();
-      if (!cancelled) {
+    if (didInit.current) return;
+    didInit.current = true;
+    const initSim = async () => {
+      try {
+        const response = await fetch(`${API_V1}/simulation/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mass, gravity, friction_coefficient: frictionCoeff,
+            initial_velocity: velocity, dt: 0.1,
+            pid_gains: { kp, ki, kd }
+          })
+        });
+        const data = await response.json();
         setSimulationId(data.simulation_id);
         setNormalForce(mass * gravity);
         setMaxFriction(mass * gravity * frictionCoeff);
+      } catch (error) {
+        console.error("Failed to initialize backend simulation", error);
       }
-    } catch (error) {
-      console.error("Failed to initialize backend simulation", error);
-    }
-  };
-  initSim();
-  return () => { cancelled = true; };
-}, []);
+    };
+    initSim();
+  }, []);
 
   const handleStepResult = (nextData) => {
     if (nextData.error) {
@@ -139,7 +139,7 @@ export default function useSimulation() {
       });
     }
     setTime(0);
-    setPathPoints([{ x: 0, y: 0 }]);
+    setPathPoints([]);
     setSteeringAngle(0);
     setHeading(0);
     setPosition({ x: 0, y: 0 });
