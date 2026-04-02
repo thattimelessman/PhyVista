@@ -1,5 +1,7 @@
 # PhyVista - Low-Gravity Vehicle Steering Simulator
 
+![CI](https://github.com/thattimelessman/PhyVista/actions/workflows/ci.yml/badge.svg)
+
 A professional physics simulation platform for studying vehicle dynamics and control systems in reduced gravity environments. Built for aerospace engineers, robotics researchers, and anyone curious about how vehicles behave on the Moon and Mars.
 
 ***NOTE*: It is suggested to wait a minute or so for [https://phyvista.vercel.app/] to connect to the backend as it's running on free tier.**
@@ -44,6 +46,8 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 - **Dual themes**: Switch between Windows Vista and Classic Mac aesthetics
 - **Real-time telemetry**: Live position, heading, forces, and control metrics via WebSocket
 - **Multi-chart analysis**: Steering response, friction utilization, angular velocity, PID error
+- **Vehicle path canvas**: 2D trajectory visualization with directional arrow and scale bar
+- **Scenarios viewer**: Embedded PDF reference guide with 10 documented test scenarios
 - **Desktop-class UX**: Menu bars, modal dialogs, and familiar desktop patterns
 
 ---
@@ -145,7 +149,7 @@ The UI will open at `http://localhost:5173`
 5. **Run simulation:**
    - Click START to begin
    - Watch real-time telemetry update via WebSocket
-   - Switch to Analysis tab for performance charts
+   - Switch to Analysis tab for performance charts and vehicle path
 
 6. **Experiment:**
    - Adjust PID gains to see control behavior change
@@ -361,7 +365,9 @@ PhyVista/
 ├── Backend/
 │   ├── phyvista_backend.py     # Core physics engine (RK4, PID, bicycle model)
 │   ├── phyvista_api.py         # Flask REST API + WebSocket server
+│   ├── Procfile                # Gunicorn config for Render
 │   ├── requirements.txt        # Python dependencies
+│   ├── .env.example            # Environment variable template
 │   └── tests/
 │       └── test_physics.py     # 36 unit tests for physics engine
 ├── Frontend/
@@ -372,6 +378,7 @@ PhyVista/
 │   │   │   ├── ControlPanel.jsx
 │   │   │   ├── PhysicsTab.jsx
 │   │   │   ├── AnalysisTab.jsx
+│   │   │   ├── PathCanvas.jsx    # 2D vehicle trajectory visualization
 │   │   │   └── HelpDialog.jsx
 │   │   ├── hooks/
 │   │   │   └── useSimulation.js  # WebSocket logic and simulation state
@@ -381,6 +388,8 @@ PhyVista/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml              # GitHub Actions CI pipeline
+├── docs/
+│   └── PhyVista_v2_Scenarios.pdf  # 10 documented test scenarios
 ├── Screenshots/
 ├── .gitignore
 ├── LICENSE
@@ -412,16 +421,16 @@ A structured reference guide covering 10 standardized test scenarios across Eart
 - Additional physics models (e.g., four-wheel dynamics)
 - More control algorithms (MPC, LQR, adaptive control)
 - Advanced visualization (3D vehicle path, terrain interaction)
-- Performance optimizations
-- Test coverage
+- Frontend tests (Vitest)
 - Documentation improvements
 
 ---
 
 ## 🐛 Known Issues
 
-- No terrain interaction modeling yet
+- Free-tier backend on Render cold-starts in 30–60 seconds after inactivity
 - Maximum 100 concurrent simulations per server instance
+- No terrain interaction modeling yet
 
 See the [Issues](https://github.com/thattimelessman/PhyVista/issues) page for full list and workarounds.
 
@@ -442,7 +451,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ---
 
-## **Notion**: https://phyvista.notion.site/PhyVista-2ef9b87cb91380ed8148da2aa6e3343b?source=copy_link
+**Notion**: https://phyvista.notion.site/PhyVista-2ef9b87cb91380ed8148da2aa6e3343b?source=copy_link
 
 ## 📧 Contact
 
