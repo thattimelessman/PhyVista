@@ -1,7 +1,8 @@
 import React from 'react';
+import PathCanvas from './PathCanvas';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-export default function AnalysisTab({ theme, historyData, isRunning, gravity, EARTH_GRAVITY, MARS_GRAVITY }) {
+export default function AnalysisTab({ theme, historyData, isRunning, gravity, EARTH_GRAVITY, MARS_GRAVITY, pathPoints, heading}) {
   const cardClass = `${theme === 'vista' ? 'border-2 border-gray-400 rounded bg-gradient-to-b from-gray-50 to-white p-4 shadow-inner' : 'bg-white p-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]'}`;
   const titleClass = `text-sm font-bold uppercase tracking-wide mb-3 ${theme === 'vista' ? 'text-gray-800' : 'text-black'}`;
   const chartProps = { strokeDasharray: "3 3", stroke: "#999" };
@@ -69,7 +70,14 @@ export default function AnalysisTab({ theme, historyData, isRunning, gravity, EA
             </LineChart>
           </ResponsiveContainer>
         </div>
+        
+        <div className={`lg:col-span-2 ${cardClass}`}>
+       <h3 className={titleClass}>Vehicle Path</h3>
+       <PathCanvas theme={theme} pathPoints={pathPoints} heading={heading} isRunning={isRunning} />
+       </div>
+
       </div>
+
 
       <div className={`${theme === 'vista' ? 'border-2 border-gray-400 rounded bg-gradient-to-b from-gray-200 to-gray-300 p-2' : 'bg-[#dddddd] border-2 border-black p-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]'}`}>
         <div className={`text-xs font-bold flex items-center gap-4 ${theme === 'vista' ? 'text-gray-800' : 'text-black'}`}>

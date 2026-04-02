@@ -24,6 +24,7 @@ export default function useSimulation() {
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
   const [historyData, setHistoryData] = useState([]);
+  const [pathPoints, setPathPoints] = useState([{ x: 0, y: 0 }]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [heading, setHeading] = useState(0);
   const [angularVelocity, setAngularVelocity] = useState(0);
@@ -63,7 +64,9 @@ export default function useSimulation() {
     }
     const state = nextData.state;
     const diag = nextData.diagnostics;
+
     setPosition({ x: state.position_x, y: state.position_y });
+    setPathPoints(prev => [...prev, { x: state.position_x, y: state.position_y }]);
     setHeading(state.heading_rad);
     setAngularVelocity(state.angular_velocity_rad);
     setSteeringAngle(state.steering_angle);
@@ -132,6 +135,7 @@ export default function useSimulation() {
       });
     }
     setTime(0);
+    setPathPoints([{ x: 0, y: 0 }]);
     setSteeringAngle(0);
     setHeading(0);
     setPosition({ x: 0, y: 0 });
@@ -196,7 +200,7 @@ export default function useSimulation() {
   return {
     simulationId, gravity, mass, velocity, steeringAngle, targetAngle,
     frictionCoeff, propulsionForce, kp, ki, kd, isRunning, time,
-    historyData, position, heading, angularVelocity, turnRadius,
+    historyData, pathPoints, position, heading, angularVelocity, turnRadius,
     normalForce, maxFriction, centripetalReq,
     EARTH_GRAVITY, MOON_GRAVITY, MARS_GRAVITY,
     setMass, setVelocity, setTargetAngle, setFrictionCoeff,
