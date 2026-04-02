@@ -21,7 +21,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pytest numpy flask flask-cors
+          pip install pytest numpy flask flask-cors flask-socketio eventlet redis
+
 
       - name: Run tests
         run: |
