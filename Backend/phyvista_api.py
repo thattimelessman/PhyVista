@@ -34,27 +34,43 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 from flask import Blueprint
 api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
 
-# Redis setup
+# Redis setup — optional, falls back to in-memory for local dev
 REDIS_URL = os.environ.get('REDIS_URL')
-if not REDIS_URL:
-    raise RuntimeError("REDIS_URL environment variable not set")
-redis_client = redis.from_url(REDIS_URL)
+redis_client = None
+if REDIS_URL:
+    try:
+        redis_client = redis.from_url(REDIS_URL)
+        redis_client.ping()
+        logger.info("Redis connected")
+    except Exception as e:
+        logger.warning(f"Redis unavailable, using in-memory storage: {e}")
+        redis_client = None
+else:
+    logger.info("No REDIS_URL set, using in-memory storage (local dev mode)")
 
 # Store active simulations in memory (cache layer over Redis)
 active_simulations: Dict[str, Simulation] = {}
 
 def save_simulation(sim_id: str, sim: Simulation):
-    redis_client.setex(f"sim:{sim_id}", 3600, pickle.dumps(sim))
     active_simulations[sim_id] = sim
+    if redis_client:
+        try:
+            redis_client.setex(f"sim:{sim_id}", 3600, pickle.dumps(sim))
+        except Exception:
+            pass
 
 def load_simulation(sim_id: str) -> Simulation:
     if sim_id in active_simulations:
         return active_simulations[sim_id]
-    data = redis_client.get(f"sim:{sim_id}")
-    if data:
-        sim = pickle.loads(data)
-        active_simulations[sim_id] = sim
-        return sim
+    if redis_client:
+        try:
+            data = redis_client.get(f"sim:{sim_id}")
+            if data:
+                sim = pickle.loads(data)
+                active_simulations[sim_id] = sim
+                return sim
+        except Exception:
+            pass
     return None
 
 def delete_simulation(sim_id: str):
