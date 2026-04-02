@@ -9,22 +9,27 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Install dependencies
         run: |
           pip install pytest numpy flask flask-cors flask-socketio eventlet redis
-
-
       - name: Run tests
         run: |
           cd Backend
           python -m pytest tests/test_physics.py -v
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - run: cd Frontend && npm install
+      - run: cd Frontend && npm run lint
