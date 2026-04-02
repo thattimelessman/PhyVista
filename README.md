@@ -1,6 +1,5 @@
 # PhyVista - Low-Gravity Vehicle Steering Simulator
 
-![CI](https://github.com/thattimelessman/PhyVista/actions/workflows/ci.yml/badge.svg)
 
 A professional physics simulation platform for studying vehicle dynamics and control systems in reduced gravity environments. Built for aerospace engineers, robotics researchers, and anyone curious about how vehicles behave on the Moon and Mars.
 
