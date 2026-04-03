@@ -70,7 +70,7 @@ export default function useSimulation() {
     const diag = nextData.diagnostics;
 
     setPosition({ x: state.position_x, y: state.position_y });
-    setPathPoints(prev => [...prev, { x: state.position_x, y: state.position_y }]);
+    setPathPoints(prev => [...prev, { x: state.position_x, y: state.position_y }].slice(-500));
     setHeading(state.heading_rad);
     setAngularVelocity(state.angular_velocity_rad);
     setSteeringAngle(state.steering_angle);
