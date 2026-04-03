@@ -93,28 +93,45 @@ export default function useSimulation() {
   };
 
   useEffect(() => {
-    if (isRunning && simulationId) {
-      const socket = io(API_BASE);
-      socketRef.current = socket;
-      socket.on('connect', () => {
+  if (isRunning && simulationId) {
+    const socket = io(API_BASE, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      socket.emit('start_step', { simulation_id: simulationId, target_angle: targetAngle });
+    });
+
+    socket.on('reconnect', () => {
+      socket.emit('start_step', { simulation_id: simulationId, target_angle: targetAngle });
+    });
+
+    socket.on('reconnect_failed', () => {
+      console.error('WebSocket reconnection failed after 5 attempts');
+      setIsRunning(false);
+    });
+
+    socket.on('step_result', (data) => {
+      handleStepResult(data);
+      setTimeout(() => {
         socket.emit('start_step', { simulation_id: simulationId, target_angle: targetAngle });
-      });
-      socket.on('step_result', (data) => {
-        handleStepResult(data);
-        setTimeout(() => {
-          socket.emit('start_step', { simulation_id: simulationId, target_angle: targetAngle });
-        }, 80);
-      });
-      socket.on('error', (err) => {
-        console.error('Socket error:', err);
-        setIsRunning(false);
-      });
-      return () => {
-        socket.disconnect();
-        socketRef.current = null;
-      };
-    }
-  }, [isRunning, simulationId, targetAngle]);
+      }, 80);
+    });
+
+    socket.on('error', (err) => {
+      console.error('Socket error:', err);
+      setIsRunning(false);
+    });
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }
+}, [isRunning, simulationId, targetAngle]);
 
   const updateBackendParam = async (paramObj) => {
     if (!simulationId) return;
