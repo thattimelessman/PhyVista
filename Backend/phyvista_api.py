@@ -187,7 +187,8 @@ def health_check():
         'status': 'healthy',
         'version': '1.0.0',
         'active_simulations': len(active_simulations),
-        'max_simulations': MAX_SIMULATIONS
+        'max_simulations': MAX_SIMULATIONS,
+        'storage': 'redis' if redis_client else 'in-memory (ephemeral)'
     })
 
 

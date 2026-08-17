@@ -18,7 +18,7 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: |
-          pip install pytest numpy flask flask-cors flask-socketio eventlet redis
+          pip install pytest numpy flask flask-cors flask-socketio eventlet
       - name: Run tests
         run: |
           cd Backend

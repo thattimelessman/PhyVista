@@ -37,7 +37,7 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 ### Backend API
 - **RESTful endpoints**: Full CRUD operations for simulation management
 - **WebSocket support**: Real-time simulation loop via Flask-SocketIO
-- **Persistent sessions**: Redis-backed session storage — sessions survive server restarts
+- **In-memory simulation store**: fast and simple — simulations live in server RAM and are lost on restart or redeploy (see [Data Persistence](#-data-persistence) below)
 - **Parameter sweeps**: Automated analysis across parameter ranges
 - **Data export**: JSON and CSV export for external analysis
 
@@ -58,7 +58,6 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 - Flask + Blueprint (versioned REST API server)
 - Flask-SocketIO (WebSocket real-time communication)
 - NumPy (numerical computation)
-- Redis (persistent session storage)
 - Flask-CORS (cross-origin support)
 
 **Frontend:**
@@ -71,7 +70,7 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 
 **Architecture:**
 - Client-server model with HTTP REST API + WebSocket
-- Redis-backed stateful simulation engine
+- In-memory stateful simulation engine
 - Real-time frontend driven by WebSocket event loop
 
 ---
@@ -82,7 +81,6 @@ This simulator models the real-world physics of wheeled vehicles operating in lo
 - Python 3.8 or higher
 - Node.js 16+ and npm
 - Git
-- Redis instance (local or cloud — see [Redis Cloud](https://redis.io/try-free) for free tier)
 
 ### Backend Setup
 ```bash
@@ -99,7 +97,6 @@ pip install -r requirements.txt
 
 # Set environment variables
 # Create a .env file or export directly:
-export REDIS_URL=redis://your-redis-url-here
 export PORT=5000
 
 # Run the backend server
@@ -425,11 +422,24 @@ A structured reference guide covering 10 standardized test scenarios across Eart
 
 ---
 
+## 💾 Data Persistence
+
+Simulations are stored **in server memory only** — there is no database. This is a deliberate simplicity trade-off for a demo/portfolio project, not an oversight:
+
+- Simulation data is lost if the backend restarts, redeploys, or (on free hosting tiers) spins down from inactivity and cold-starts back up.
+- There are no user accounts or saved-simulation history across sessions.
+- If you need a result, export it (JSON/CSV) before closing the tab or letting the backend idle out.
+
+The storage layer (`save_simulation` / `load_simulation` / `delete_simulation` in `phyvista_api.py`) is written as a small, swappable module — plugging in Redis or Postgres for real persistence would only mean changing those three functions, not the rest of the API.
+
+---
+
 ## 🐛 Known Issues
 
 - Free-tier backend on Render cold-starts in 30–60 seconds after inactivity
 - Maximum 100 concurrent simulations per server instance
 - No terrain interaction modeling yet
+- Simulation data does not persist across backend restarts (see [Data Persistence](#-data-persistence))
 
 See the [Issues](https://github.com/thattimelessman/PhyVista/issues) page for full list and workarounds.
 
