@@ -11,7 +11,10 @@ import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
-import redis
+try:
+    import redis
+except ImportError:
+    redis = None
 import pickle
 from typing import Dict, Optional, List, Any
 from functools import wraps
