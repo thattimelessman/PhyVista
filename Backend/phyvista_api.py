@@ -106,22 +106,6 @@ MAX_DURATION = 300.0
 MAX_PARAMETER_SWEEP_VALUES = 50
 
 
-# --- OPTIMIZED JSON ENCODER ---
-from flask.json.provider import DefaultJSONProvider
-
-class NumpyProvider(DefaultJSONProvider):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        if isinstance(obj, (np.floating, np.float32, np.float64)):
-            return float(obj)
-        if isinstance(obj, (np.integer, np.int32, np.int64)):
-            return int(obj)
-        if isinstance(obj, np.bool_):
-            return bool(obj)
-        if isinstance(obj, np.complexfloating):
-            return {'real': float(obj.real), 'imag': float(obj.imag)}
-        return super().default(obj)
 
 
 
