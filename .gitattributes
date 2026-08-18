@@ -1,6 +1,8 @@
 # Exclude frontend build artifacts and lockfiles from language stats
 Frontend/package-lock.json linguist-generated=true
 Frontend/dist/** linguist-generated=true
+Frontend/** linguist-vendored=true
+Frontend/** linguist-detectable=false
 Frontend/node_modules/** linguist-vendored=true
 
 # Optionally de-emphasize pure config/boilerplate
