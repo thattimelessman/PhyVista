@@ -285,8 +285,14 @@ class VehicleDynamics:
         
         friction_utilization = (required_force / max_force) * 100.0
         can_turn = required_force <= max_force
-        
-        return can_turn, min(friction_utilization, 100.0)
+
+        # Intentionally NOT clamped to 100%. Values above 100% are real and
+        # meaningful — they show how far past the friction limit the vehicle
+        # is. Clamping here made every over-limit case (105%, 300%, 1200%...)
+        # report identically as 100.0%, which erased the difference between
+        # "barely slipping" and "wildly over the limit" and made the metric
+        # look broken/hardcoded across different gravity environments.
+        return can_turn, friction_utilization
     
     def update_state(self, state: VehicleState, dt: float, steering_input: float) -> VehicleState:
         """
@@ -320,14 +326,18 @@ class VehicleDynamics:
                 # No slip: use kinematic relationship ω = v/R
                 angular_velocity = state.velocity / turn_radius
             else:
-                # Slipping: limited by maximum friction force
-                # Maximum lateral acceleration: a_max = μg
-                # ω_max = a_max / v = μg / v
+                # Slipping: still scale with the requested turn radius (ω = v/R),
+                # but cap at the maximum rate the available friction can support
+                # (ω_max = a_max / v = μg / v). Previously this branch ignored
+                # the steering angle entirely and always output the same fixed
+                # rate, so steering angle would drift to whatever value matched
+                # that constant and get stuck there instead of tracking target.
                 if state.velocity > self._epsilon:
                     max_angular_vel = (self.params.friction_coefficient * 
                                      self.params.gravity) / state.velocity
-                    # Apply direction based on steering
-                    angular_velocity = max_angular_vel * np.sign(new_steering)
+                    desired_angular_vel = state.velocity / turn_radius
+                    angular_velocity = np.clip(desired_angular_vel,
+                                              -max_angular_vel, max_angular_vel)
                 else:
                     angular_velocity = 0.0
         else:
