@@ -315,6 +315,36 @@ With anti-windup saturation on integral term and output limiting.
 
 ---
 
+## 🔍 External Validation
+
+[OmniLink](https://github.com/omnilink-tech/omnisim), maintainers of the open-source **OmniSim** robotics simulator, independently compared PhyVista's slip threshold against a rigid-contact solver. They imported `phyvista_backend.py` and bisected the actual `check_slip_condition()` (not a reimplementation from this README), then ran a wheeled robot through a steering sweep at Earth, Mars and Moon gravity. Defaults held constant throughout: 500 kg, μ = 0.7, L = 2.5 m, v = 10 m/s. Only gravity changed.
+
+| World | g (m/s²) | Solver limit vs. μg | PhyVista δ_crit | Solver-measured δ |
+|-------|----------|---------------------|-----------------|-------------------|
+| Earth | 9.81 | +2.86% | 9.741° | 10.014° |
+| Mars  | 3.71 | +7.08% | 3.715° | 3.977° |
+| Moon  | 1.62 | +6.35% | 1.624° | 1.727° |
+
+**Where they agree**
+- The gravity scaling holds: across a ~6× range of gravity, the solver's measured lateral-acceleration limit tracks `μg`.
+- The slip threshold `atan(μgL/v²)` was matched to zero difference by the bisection of PhyVista's own function.
+- Below the limit, the kinematic relation `R = L / tan(δ)` is reproduced to within about 1% (measured turn-radius ratio 0.990 to 1.048).
+- The solver grips slightly *harder* than `F = μN` predicts, in the same direction every time, so PhyVista's threshold is consistently on the conservative side.
+
+**What PhyVista's model cannot express: wheel lift-off**
+
+As gravity falls, the vehicle in the solver begins leaving the ground: 5.96% of samples on Earth, 21.73% on Mars and 32.43% on the Moon. A point mass with a friction budget cannot represent a wheel unloading, and at low gravity that becomes a dominant way a turn goes wrong before friction runs out. A per-axle normal-load check is the natural next extension (see [Known Issues](#-known-issues)).
+
+**Caveats (these travel with every number above)**
+- OmniSim's contact friction is a single isotropic coefficient with no tyre model.
+- The friction-cone setting alone moves the result substantially: MuJoCo's stock pyramidal cone gives a lateral-acceleration limit 52.8% different from the elliptic cone (ratio 1.528), so any comparison is only as meaningful as the cone it was run under.
+- Neither method has been validated against a real wheel on real regolith.
+- Neither side models tyre dynamics, weight transfer, slip angle, or a static/kinetic friction split.
+
+Full write-up: [omnilink-tech/omnisim](https://github.com/omnilink-tech/omnisim)
+
+---
+
 ## 📊 Use Cases
 
 **Aerospace Research:**
@@ -439,6 +469,7 @@ The storage layer (`save_simulation` / `load_simulation` / `delete_simulation` i
 - Free-tier backend on Render cold-starts in 30–60 seconds after inactivity
 - Maximum 100 concurrent simulations per server instance
 - No terrain interaction modeling yet
+- No per-axle normal-load / wheel lift-off check yet (flagged by the [external comparison](#-external-validation))
 - Simulation data does not persist across backend restarts (see [Data Persistence](#-data-persistence))
 
 See the [Issues](https://github.com/thattimelessman/PhyVista/issues) page for full list and workarounds.
@@ -457,6 +488,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - Bicycle model from classical robotics textbooks
 - UI inspiration from vintage operating systems
 - Built with modern web technologies
+- Independent slip-threshold comparison by [OmniLink](https://github.com/omnilink-tech/omnisim) (see [External Validation](#-external-validation))
 
 ---
 
